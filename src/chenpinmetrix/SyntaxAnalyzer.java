@@ -33,6 +33,7 @@ public class SyntaxAnalyzer {
     private final int OPEN_SQUARE = 15;
     private final int CLOSE_SQUARE = 16;
     private final int INCREMENT = 17;
+    private final int SWITCH = 18;
     
     
     
@@ -73,6 +74,7 @@ public class SyntaxAnalyzer {
                     break;
                 case IF: 
                 case WHILE:
+                case SWITCH:
                     ifLexem();
                     break;
                 case OPEN_ROUND:
@@ -116,7 +118,6 @@ public class SyntaxAnalyzer {
         for (Variable tempVariable : variables) {
                 if (tempVariable.active && tempVariable.name.equals(lastLexem)) {
                     tempVariable.modifiable = true;
-                    tempVariable.parasitic = false;
                     tempVariable.input = false;
                     break;
                 }
@@ -256,7 +257,6 @@ public class SyntaxAnalyzer {
     private void assignmentLexem() {
         lastVariable.modifiable = true;
         lastVariable.input = false;
-        lastVariable.parasitic = false;
     }
     
     private void functionLexem() {
@@ -344,7 +344,7 @@ public class SyntaxAnalyzer {
     
     private void addNewVariable(String name, int depthLevel) {
         for (Variable tempVariable : variables) {
-            if (tempVariable.name.equals(name)) {
+            if (tempVariable.active && tempVariable.name.equals(name)) {
                 tempVariable.active = false;
                 break;
             }
@@ -393,6 +393,8 @@ public class SyntaxAnalyzer {
             case "++":
             case "--":
                 return INCREMENT;
+            case "switch":
+                return SWITCH;
             default:
                 return IDENTIFIER;
         }
