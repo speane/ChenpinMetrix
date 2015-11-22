@@ -42,10 +42,10 @@ public class ChenpinMetrix {
                 T++;
             }
             
-            System.out.println(tempVariable.name + " " + tempVariable.input + " " +
+            /*System.out.println(tempVariable.name + " " + tempVariable.input + " " +
                                 tempVariable.managing + " " + 
                                 tempVariable.modifiable + " " + 
-                                tempVariable.parasitic);
+                                tempVariable.parasitic);*/
         }
         
         System.out.println("P + 2*M + 3*C + 0.5*T =\n" + P + " + 2 * " + M + 
