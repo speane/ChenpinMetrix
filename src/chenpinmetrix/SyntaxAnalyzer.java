@@ -32,6 +32,7 @@ public class SyntaxAnalyzer {
     private final int ASSIGNMENT = 14;
     private final int OPEN_SQUARE = 15;
     private final int CLOSE_SQUARE = 16;
+    private final int INCREMENT = 17;
     
     
     
@@ -41,6 +42,7 @@ public class SyntaxAnalyzer {
     private final Lexer mainLexer;
     private Variable lastVariable;
     private boolean insideIf;
+    private boolean insideSquare;
     
     public SyntaxAnalyzer(String sourceCode) {
         this.mainLexer = new Lexer(sourceCode);
@@ -48,6 +50,7 @@ public class SyntaxAnalyzer {
         this.currentDepthLevel = 0;
         this.lastVariable = null;
         this.insideIf = false;
+        this.insideSquare = false;
     }
     
     public ArrayList<Variable> analyze() {
@@ -78,6 +81,15 @@ public class SyntaxAnalyzer {
                 case FOR:
                     forLexem();
                     break;
+                case INCREMENT:
+                    increment();
+                    break;
+                case OPEN_SQUARE:
+                    insideSquare = true;
+                    break;
+                case CLOSE_SQUARE:
+                    insideSquare = false;
+                    break;
             }
         }
         
@@ -92,6 +104,23 @@ public class SyntaxAnalyzer {
             forCondition();
             forChange();
         }
+    }
+    
+    private void increment() {
+        String lastLexem;
+        lastLexem = mainLexer.getLastLexem();
+        if (!(getLexemType(lastLexem) == IDENTIFIER)) {
+            lastLexem = mainLexer.showNextLexem();
+        }
+        
+        for (Variable tempVariable : variables) {
+                if (tempVariable.active && tempVariable.name.equals(lastLexem)) {
+                    tempVariable.modifiable = true;
+                    tempVariable.parasitic = false;
+                    tempVariable.input = false;
+                    break;
+                }
+            }
     }
     
     private void forInit() {
@@ -110,6 +139,15 @@ public class SyntaxAnalyzer {
                     break;
                 case ASSIGNMENT:
                     assignmentLexem();
+                    break;
+                case INCREMENT:
+                    increment();
+                    break;
+                case OPEN_SQUARE:
+                    insideSquare = true;
+                    break;
+                case CLOSE_SQUARE:
+                    insideSquare = false;
                     break;
             }
             tempLexem = mainLexer.getNextLexem();
@@ -132,6 +170,15 @@ public class SyntaxAnalyzer {
                 case ASSIGNMENT:
                     assignmentLexem();
                     break;
+                case INCREMENT:
+                    increment();
+                    break;
+                case OPEN_SQUARE:
+                    insideSquare = true;
+                    break;
+                case CLOSE_SQUARE:
+                    insideSquare = false;
+                    break;
             }
             tempLexem = mainLexer.getNextLexem();
         }
@@ -153,6 +200,15 @@ public class SyntaxAnalyzer {
                 case ASSIGNMENT:
                     assignmentLexem();
                     break;
+                case INCREMENT:
+                    increment();
+                    break;
+                case OPEN_SQUARE:
+                    insideSquare = true;
+                    break;
+                case CLOSE_SQUARE:
+                    insideSquare = false;
+                    break;
             }
             tempLexem = mainLexer.getNextLexem();
         }
@@ -173,6 +229,15 @@ public class SyntaxAnalyzer {
                     break;
                 case OPEN_ROUND:
                     parentheses();
+                    break;
+                case INCREMENT:
+                    increment();
+                    break;
+                case OPEN_SQUARE:
+                    insideSquare = true;
+                    break;
+                case CLOSE_SQUARE:
+                    insideSquare = false;
                     break;
             }
             tempLexem = mainLexer.getNextLexem();
@@ -231,6 +296,9 @@ public class SyntaxAnalyzer {
                     }
                     nextAllowed = false;
                     break;
+                case OPEN_ROUND:
+                    parentheses();
+                    break;
                 case COMMA:
                     nextAllowed = true;
                     break;
@@ -245,12 +313,14 @@ public class SyntaxAnalyzer {
     
     private void identifierLexem(String identifier) {
         for (Variable tempVariable : variables) {
-            if (tempVariable.name.equals(identifier)) {
-                lastVariable = tempVariable;
-                lastVariable.parasitic = false;
+            if (tempVariable.active && tempVariable.name.equals(identifier)) {
+                if (!insideSquare) {
+                    lastVariable = tempVariable;
+                }
+                tempVariable.parasitic = false;
                 
                 if (insideIf) {
-                    lastVariable.managing = true;
+                    tempVariable.managing = true;
                 }
                 break;
             }
@@ -305,6 +375,9 @@ public class SyntaxAnalyzer {
                 return OPEN_SQUARE;
             case "]":
                 return CLOSE_SQUARE;
+            case "++":
+            case "--":
+                return INCREMENT;
             default:
                 return IDENTIFIER;
         }
