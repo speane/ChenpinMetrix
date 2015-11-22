@@ -1,6 +1,8 @@
 function state(x, y) {
+	
 	// assign URL of image at given coordinates to local variable
-	var source = document.images[computeIndex(x, y)].src
+	//var source = document.images[computeIndex(x, y)].src
+	var lol = x + y++;
 
 	// sexpression evaluates to 0 or 1
 	//return (source.charAt(source.lastIndexOf('/') + 1) == '0') ? false : true

@@ -294,6 +294,9 @@ public class SyntaxAnalyzer {
                     if (nextAllowed) {
                         addNewVariable(tempLexem, currentDepthLevel);
                     }
+                    else {
+                        identifierLexem(tempLexem);
+                    }
                     nextAllowed = false;
                     break;
                 case OPEN_ROUND:
@@ -301,6 +304,18 @@ public class SyntaxAnalyzer {
                     break;
                 case COMMA:
                     nextAllowed = true;
+                    break;
+                case ASSIGNMENT:
+                    assignmentLexem();
+                    break;
+                case INCREMENT:
+                    increment();
+                    break;
+                case OPEN_SQUARE:
+                    insideSquare = true;
+                    break;
+                case CLOSE_SQUARE:
+                    insideSquare = false;
                     break;
                 
             }

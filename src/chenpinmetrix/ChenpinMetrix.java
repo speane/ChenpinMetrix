@@ -21,7 +21,7 @@ public class ChenpinMetrix {
     public static void main(String[] args) {
         ArrayList<Variable> variables = new ArrayList<>();
         
-        String sourceCode = FileHandler.readFromFile("source1.js");
+        String sourceCode = FileHandler.readFromFile("source.js");
         SyntaxAnalyzer codeAnalyzer = new SyntaxAnalyzer(sourceCode);
         variables = codeAnalyzer.analyze();
         

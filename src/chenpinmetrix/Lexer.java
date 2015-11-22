@@ -24,8 +24,8 @@ public class Lexer {
 
     private final String sourceCode;
     private int tempSymbolNumber;
-    private String lastLexem;
-    private String prevLexem;
+    public String lastLexem;
+    public String prevLexem;
     
     public String getLastLexem() {
         return lastLexem;
@@ -76,30 +76,6 @@ public class Lexer {
     private final String PLUS = "+";
     private final String MINUS = "-";
 
-    private boolean isLeftCurlyBrace(String symbol) {
-        return symbol.equals("{");
-    }
-
-    private boolean isRightCurlyBrace(String symbol) {
-        return symbol.equals("}");
-    }
-
-    private boolean isLeftBrace(String symbol) {
-        return symbol.equals("(");
-    }
-
-    private boolean isRightBrace(String symbol) {
-        return symbol.equals(")");
-    }
-
-    private boolean isBreaker(String symbol) {
-        return symbol.equals(";");
-    }
-
-    private boolean isComma(String symbol) {
-        return symbol.equals(",");
-    }
-
     private boolean isQuotes(String symbol) {
         return symbol.equals("\"");
     }
@@ -122,14 +98,6 @@ public class Lexer {
 
     private boolean isAssignment(String symbol) {
         return symbol.equals("=");
-    }
-
-    private boolean isOpenSquareBracket(String symbol) {
-        return symbol.equals("[");
-    }
-
-    private boolean isCloseSquareBracket(String symbol) {
-        return symbol.equals("]");
     }
 
     private boolean isPlus(String symbol) {
@@ -334,53 +302,15 @@ public class Lexer {
                         getNextSymbol();
                         lastLexem = prevLexem;
                         prevLexem = "";
+                        break;
                 }
             }
         }
         lastLexem = prevLexem;
         prevLexem = result;
-        
+ 
         return result;
 
-        /*while (isAvailable()) {
-         tempSymbol = showNextSymbol();
-            
-         if (isWordStartSymbol(tempSymbol)) {
-         result = word();
-         break;
-         }
-         else if (isLeftCurlyBrace(tempSymbol) || isRightCurlyBrace(tempSymbol) ||
-         isLeftBrace(tempSymbol) || isRightBrace(tempSymbol) ||
-         isBreaker(tempSymbol) || isComma(tempSymbol) ||
-         isNewLine(tempSymbol) || isAssignment(tempSymbol) ||
-         isOpenSquareBracket(tempSymbol) || 
-         isCloseSquareBracket(tempSymbol)) {
-         result = getNextSymbol();
-         break;
-         }
-         else if (isQuotes(tempSymbol)) {
-         getNextSymbol();
-         stringLiteral();
-         }
-         else if (isSlash(tempSymbol)) {
-         getNextSymbol();
-         commentaryStart();
-         }
-         else if (isApostrophe(tempSymbol)) {
-         getNextSymbol();
-         charLiteral();
-         }
-         else if (isPlus(tempSymbol)) {
-         result = plus();
-                
-         }
-         else {
-         getNextSymbol();
-         lastLexem = "";
-         }
-         }
-         lastLexem = result;
-         return result;*/
     }
 
     private String asterisk() {
@@ -411,8 +341,12 @@ public class Lexer {
 
     public String showNextLexem() {
         String result;
+        String savePrevLexem = prevLexem;
+        String saveLastLexem = lastLexem;
         int saveNumber = tempSymbolNumber;
         result = blank();
+        prevLexem = savePrevLexem;
+        lastLexem = saveLastLexem;
         tempSymbolNumber = saveNumber;
         return result;
     }

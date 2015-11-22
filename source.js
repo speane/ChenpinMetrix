@@ -56,9 +56,9 @@ drawScreen()
 // array of screen (10 x 19)
 var ar = new Array()
 for (var i = 0; i < 10; ++i) {
-	ar[i] = new Array(19)
+	//ar[i] = new Array(19)
 	for (var j = 0; j < 19; ++j) {
-		ar[i][j] = 0
+		//ar[i][j] = 0
 	}
 }
 
@@ -79,5 +79,5 @@ function setSquare(x, y, state) {
 
 	// if state is 1 square is active, so 1 is assigned to ar[x][y]
  	// otherwise square is not active so 0 is assigned to ar[x][y]
-	ar[x][y] = state
+	//ar[x][y] = state
 }
