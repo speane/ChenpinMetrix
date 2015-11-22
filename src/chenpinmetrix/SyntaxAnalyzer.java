@@ -40,12 +40,14 @@ public class SyntaxAnalyzer {
     private ArrayList<Variable> variables;
     private final Lexer mainLexer;
     private Variable lastVariable;
+    private boolean insideIf;
     
     public SyntaxAnalyzer(String sourceCode) {
         this.mainLexer = new Lexer(sourceCode);
         this.variables = new ArrayList<>();
         this.currentDepthLevel = 0;
         this.lastVariable = null;
+        this.insideIf = false;
     }
     
     public ArrayList<Variable> analyze() {
@@ -66,10 +68,72 @@ public class SyntaxAnalyzer {
                 case ASSIGNMENT:
                     assignmentLexem();
                     break;
+                case IF: 
+                case WHILE:
+                    ifLexem();
+                    break;
+                case OPEN_ROUND:
+                    parentheses();
+                    break;
+                case FOR:
+                    forLexem();
+                    break;
             }
         }
         
         return this.variables;
+    }
+    
+    private void forLexem() {
+        String nextLexem = mainLexer.getNextLexem();
+        
+        if (getLexemType(nextLexem) == OPEN_ROUND) {
+            forInit();
+            forCondition();
+            forChange();
+        }
+    }
+    
+    private void forInit() {
+       while ()
+    }
+    
+    private void forCondition() {
+        
+    }
+    
+    private void forChange() {
+        
+    }
+            
+    private void parentheses() {
+        String tempLexem = mainLexer.getNextLexem();
+        while (getLexemType(tempLexem) != CLOSE_ROUND) {
+            switch(getLexemType(tempLexem)) {
+                case VAR:
+                    varLexem();
+                    break;
+                case IDENTIFIER:
+                    identifierLexem(tempLexem);
+                    break;
+                case ASSIGNMENT:
+                    assignmentLexem();
+                    break;
+                case OPEN_ROUND:
+                    parentheses();
+                    break;
+            }
+            tempLexem = mainLexer.getNextLexem();
+        }
+    }
+    
+    private void ifLexem() {
+        String nextLexem = mainLexer.getNextLexem();
+        if (getLexemType(nextLexem) == OPEN_ROUND) {
+            insideIf = true;
+            parentheses();
+            insideIf = false;
+        }
     }
     
     private void assignmentLexem() {
@@ -137,6 +201,9 @@ public class SyntaxAnalyzer {
             if (tempVariable.name.equals(identifier)) {
                 lastVariable = tempVariable;
                 lastVariable.parasitic = false;
+                if (insideIf) {
+                    lastVariable.managing = true;
+                }
                 break;
             }
         }
