@@ -95,15 +95,67 @@ public class SyntaxAnalyzer {
     }
     
     private void forInit() {
-       while ()
+        String tempLexem = mainLexer.getNextLexem();
+       
+        while (getLexemType(tempLexem) != BREAKER) {
+            switch (getLexemType(tempLexem)) {
+                case VAR:
+                    varLexem();
+                    break;
+                case IDENTIFIER:
+                    identifierLexem(tempLexem);
+                    break;
+                case OPEN_ROUND:
+                    parentheses();
+                    break;
+                case ASSIGNMENT:
+                    assignmentLexem();
+                    break;
+            }
+            tempLexem = mainLexer.getNextLexem();
+        }
     }
     
     private void forCondition() {
+        String tempLexem = mainLexer.getNextLexem();
         
+        insideIf = true;
+        
+        while (getLexemType(tempLexem) != BREAKER) {
+            switch (getLexemType(tempLexem)) {
+                case IDENTIFIER:
+                    identifierLexem(tempLexem);
+                    break;
+                case OPEN_ROUND:
+                    parentheses();
+                    break;
+                case ASSIGNMENT:
+                    assignmentLexem();
+                    break;
+            }
+            tempLexem = mainLexer.getNextLexem();
+        }
+        
+        insideIf = false;
     }
     
     private void forChange() {
-        
+        String tempLexem = mainLexer.getNextLexem();
+       
+        while (getLexemType(tempLexem) != CLOSE_ROUND) {
+            switch (getLexemType(tempLexem)) {
+                case IDENTIFIER:
+                    identifierLexem(tempLexem);
+                    break;
+                case OPEN_ROUND:
+                    parentheses();
+                    break;
+                case ASSIGNMENT:
+                    assignmentLexem();
+                    break;
+            }
+            tempLexem = mainLexer.getNextLexem();
+        }
     }
             
     private void parentheses() {
@@ -166,17 +218,12 @@ public class SyntaxAnalyzer {
     }
     
     private void varLexem() {
-        String tempLexem = mainLexer.getNextLexem();
+        String tempLexem = mainLexer.showNextLexem();
         boolean nextAllowed = true;
-        /*if (getLexemType(tempLexem) == IDENTIFIER) {
-            addNewVariable(tempLexem, currentDepthLevel);
-        }
-        else {
-            
-        }*/
         
         while (mainLexer.isAvailable() && (getLexemType(tempLexem) != NEW_LINE) &&
                 (getLexemType(tempLexem) != BREAKER)) {
+            mainLexer.getNextLexem();
             switch (getLexemType(tempLexem)) {
                 case IDENTIFIER:
                     if (nextAllowed) {
@@ -189,7 +236,7 @@ public class SyntaxAnalyzer {
                     break;
                 
             }
-            tempLexem = mainLexer.getNextLexem();
+            tempLexem = mainLexer.showNextLexem();
         }
         
     }
@@ -201,6 +248,7 @@ public class SyntaxAnalyzer {
             if (tempVariable.name.equals(identifier)) {
                 lastVariable = tempVariable;
                 lastVariable.parasitic = false;
+                
                 if (insideIf) {
                     lastVariable.managing = true;
                 }
